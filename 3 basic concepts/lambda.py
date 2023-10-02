@@ -4,7 +4,7 @@
 #     return x*2
 
 doubled = lambda num : num * 2
-squared = lambda num : num * num
+squared = lambda num : num ** 2
 result = doubled(44)
 output = squared(9)
 # print(result, output)
