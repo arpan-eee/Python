@@ -1,8 +1,10 @@
 class Bank:
     def __init__(self,name) -> None:
         self.name = name
-        self.__users = {}
+        self.users = {}
         self.__balance = 0
+        self.__loan_status = True
+        self.__loan_given = 0
         self.__is_bankrupt = False
 
     def deposit(self,amount):
@@ -17,13 +19,28 @@ class Bank:
         else :
             print("Invalid Amount")
 
+    def loan_given(self,amount):
+        self.__loan_given += amount
+        self.__balance -= amount
+
     @property
     def balance(self):
         return self.__balance
+    
+    @property
+    def loan_given_amount(self):
+        return self.__loan_given
    
     @property
     def status(self):
         return self.__is_bankrupt
+    
+    @property
+    def loan_status(self):
+        return self.__loan_status
+    
+    def loan_status_update(self,status):
+        self.__loan_status = status
 
     def add_user(self,user):
         user_number = f'{len(self.__users)+1}'
@@ -90,9 +107,9 @@ class User:
     
     def take_loan(self,amount,bank):
         if self.loan_count < 2:
-            if bank.balance >= amount and bank.status == False:
+            if bank.balance >= amount and bank.status == False and bank.loan_status == True:
                 self.__loan += amount
-                bank.withdraw(amount)
+                bank.loan_given(amount)
                 self.loan_count+=1
             else:
                 print("The bank is bankrupt")
@@ -109,7 +126,23 @@ class Admin(User):
     def __init__(self, name, email, address, ac_type) -> None:
         super().__init__(name, email, address, ac_type)
 
+    def delete_account(self,id,bank):
+        del bank.users[id]
+    
+    def show_users(self,bank):
+        for user in bank.users.values():
+            print(user.name)
 
+    def bank_balance(self,bank):
+        print(bank.balance)
+
+    def loan_amount(self,bank):
+        print(bank.loan_given_amount)
+    
+    def loan_status_update(self,bank,status):
+        bank.loan_status_update(status)
+
+    
 
 ab = Bank("AB")
 arpan = User("Arpan", "a@g.com", "Ng", "savings")
