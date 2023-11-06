@@ -1,7 +1,7 @@
 class Bank:
     def __init__(self,name) -> None:
         self.name = name
-        self.users = {}
+        self.__users = {}
         self.__balance = 0
         self.__loan_status = True
         self.__loan_given = 0
@@ -28,6 +28,10 @@ class Bank:
         return self.__balance
     
     @property
+    def users(self):
+        return self.__users
+    
+    @property
     def loan_given_amount(self):
         return self.__loan_given
    
@@ -47,6 +51,10 @@ class Bank:
         self.__users[user_number] = user
         user.ac_number(user_number)
 
+    def delete_account(self,id):
+        del self.__users[id]
+
+
     def transfer(self,ac_1,ac_2,amount):
         if ac_1 <= len(self.__users) and ac_2 <= len(self.__users):
             if self.__users[ac_1].balance > amount :
@@ -60,7 +68,7 @@ class Bank:
 
         
 class User:
-    def __init__(self,name,email,address,ac_type) -> None:
+    def __init__(self,name,email,address,ac_type,pas) -> None:
         self.name = name
         self.__email = email
         self.__address = address
@@ -71,6 +79,7 @@ class User:
         self.__ac_number = None
         self.__transaction = {}
         self.loan_count = 0
+        self.pas = pas
 
     def deposit(self,amount,bank):
         if amount<=0:
@@ -123,11 +132,15 @@ class User:
 
         
 class Admin(User):
-    def __init__(self, name, email, address, ac_type) -> None:
-        super().__init__(name, email, address, ac_type)
+    def __init__(self, name, email, address, ac_type,pas) -> None:
+        super().__init__(name, email, address, ac_type,pas)
 
-    def delete_account(self,id,bank):
-        del bank.users[id]
+    def delete_account(self, user_name, bank):
+        for user_number, user in bank.users.items():
+            if user.name == user_name:
+                del bank.users[user_number]
+                return
+        print(f"User '{user_name}' not found.")
     
     def show_users(self,bank):
         for user in bank.users.values():
@@ -145,12 +158,71 @@ class Admin(User):
     
 
 ab = Bank("AB")
-arpan = User("Arpan", "a@g.com", "Ng", "savings")
-ab.add_user(arpan)
-arpan.deposit(1000,ab)
-arpan.take_loan(800,ab)
-arpan.take_loan(500,ab)
 
-print(ab.balance)
-print(arpan.balance)
+while True:
+    print("Welcome to AB Bank")
+    print("Login as a :")
+    print("1. User")
+    print("2. Admin")
+    a=int(input())
+
+    if a==1:
+        print("1. New Account")
+        print("2. Existing Account")
+        a=int(input())
+
+        if a==1:
+            name = input("Enter your UserName : ")
+            email = input("Enter Email : ")
+            address = input("Enter Your Address : ")
+            t = input("Enter Account Type : 1. Savings 2. Current : ")
+            if int(t)==1:
+                ty_pe = "Savings"
+            else:
+                ty_pe = "Current"
+            pas = input("Type Password : ")
+            usr = User(name,email,address,ty_pe,pas)
+            ab.add_user(usr)
+        elif a==2:
+            name = input("Enter your UserName : ")
+            pas = input("Type Password : ")
+
+            for user_number, user in ab.users.items():
+                if user.name == name and user.pas == pas :
+                    print ("Login Successful")
+
+
+    elif a==2:
+        name = input("Enter your UserName : ")
+        email = input("Enter Email : ")
+        address = input("Enter Your Address : ")
+        ty_pe = "Admin"
+
+        ad = Admin(name,email,address,ty_pe)
+        ab.add_user(ad)
+    
+
+
+
+
+
+
+# ad = Admin("ad","a","a","ad")
+
+# arpan = User("Arpan", "a@g.com", "Ng", "savings")
+# ab.add_user(arpan)
+# barpan = User("barpan", "a@g.com", "Ng", "savings")
+# ab.add_user(barpan)
+# carpan = User("cArpan", "a@g.com", "Ng", "savings")
+# ab.add_user(carpan)
+
+# ad.delete_account("Arpan", ab)
+
+# arpan.deposit(1000,ab)
+# arpan.take_loan(800,ab)
+# arpan.take_loan(500,ab)
+
+# print(ab.balance)
+# print(arpan.balance)
+# ad.show_users(ab)
 
